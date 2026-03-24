@@ -5,6 +5,9 @@ description.en = "Highly-opinionated MTPROTO proxy for Telegram"
 version = "2.2.4~ynh1"
 maintainers = ["YourName"]
 
+[integration]
+yunohost = ">= 11.0"
+
 [install]
     [install.port]
     type = "string"

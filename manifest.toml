@@ -5,6 +5,12 @@ description.en = "Highly-opinionated MTPROTO proxy for Telegram"
 version = "2.2.4~ynh1"
 maintainers = ["YourName"]
 
+[upstream]
+license = "MIT"
+code = "https://github.com/9seconds/mtg"
+admindoc = "https://github.com/9seconds/mtg/blob/master/README.md"
+
+
 [integration]
 yunohost = ">= 11.0"
 architectures = "all"

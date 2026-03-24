@@ -8,6 +8,9 @@ maintainers = ["YourName"]
 [integration]
 yunohost = ">= 11.0"
 architectures = "all"
+ram.build = "50M"
+ram.runtime = "50M"
+disk = "50M"
 
 [install]
     [install.port]

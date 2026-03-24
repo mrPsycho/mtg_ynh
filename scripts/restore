@@ -5,33 +5,28 @@
 #=================================================
 source /usr/share/yunohost/helpers
 
-app=$YNH_APP_ID
-
-# Define local variables
-install_dir=/opt/$app
-conf_dir=/etc/$app
-
-# Retrieve the port from configuration
-port=$(ynh_app_setting_get --app="$app" --key=port)
+conf_dir=/etc/$YNH_APP_ID
 
 #=================================================
-# RESTORE MTG
+# RESTORE
 #=================================================
-ynh_script_progression --message="Restoring mtg data..." --weight=1
+ynh_script_progression "Restoring configuration files..."
 
-ynh_restore_file "$install_dir"
-ynh_restore_file "$conf_dir"
+ynh_restore "$install_dir"
+ynh_restore "$conf_dir"
 
 #=================================================
-# SYSTEMD AND FIREWALL
+# SYSTEMD + SERVICE REGISTRATION
 #=================================================
-ynh_script_progression --message="Recreating systemd and firewall..." --weight=1
+ynh_script_progression "Restoring systemd service..."
 
-ynh_add_systemd_config
+ynh_config_add_systemd
 
-ynh_exec_warn_less yunohost firewall allow TCP "$port"
+yunohost service add "$app" \
+    --description "MTProto proxy for Telegram" \
+    --needs_exposed_ports "$port"
 
-ynh_systemd_action --action=enable --service_name="$app"
-ynh_systemd_action --action=start --service_name="$app"
+ynh_systemctl --action=enable
+ynh_systemctl --action=start
 
-ynh_script_progression --message="Restore complete!" --weight=1
+ynh_script_progression "Restore complete!"

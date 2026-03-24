@@ -5,32 +5,30 @@
 #=================================================
 source /usr/share/yunohost/helpers
 
-app=$YNH_APP_ID
-
-conf_dir=/etc/$app
+conf_dir=/etc/$YNH_APP_ID
 
 #=================================================
 # STOP AND REMOVE SERVICE
 #=================================================
-ynh_script_progression --message="Stopping and removing systemd service..." --weight=1
+ynh_script_progression "Stopping and removing systemd service..."
 
-if systemctl is-active --quiet "$app"; then
-    ynh_systemd_action --action=stop --service_name="$app"
-fi
-ynh_systemd_action --action=disable --service_name="$app" || true
+yunohost service remove "$app"
 
-ynh_remove_systemd_config
+ynh_systemctl --action=stop --ignore_exceptions
+ynh_systemctl --action=disable --ignore_exceptions
+
+ynh_config_remove_systemd
 
 #=================================================
-# REMOVE FILES
-# Note: system user, install_dir, apt packages and firewall rules
+# REMOVE CONFIGURATION FILES
+# Note: system user, install_dir, apt packages, and firewall ports
 # are automatically removed by YunoHost via [resources]
 #=================================================
-ynh_script_progression --message="Removing configuration files..." --weight=1
+ynh_script_progression "Removing configuration files..."
 
-ynh_secure_remove "$conf_dir"
+ynh_safe_rm "$conf_dir"
 
 #=================================================
 # DONE
 #=================================================
-ynh_script_progression --message="Removal complete!" --weight=1
+ynh_script_progression "Removal complete!"

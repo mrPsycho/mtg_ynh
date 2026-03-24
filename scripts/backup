@@ -5,16 +5,12 @@
 #=================================================
 source /usr/share/yunohost/helpers
 
-app=$YNH_APP_ID
-
-# Define local variables
-install_dir=/opt/$app
-conf_dir=/etc/$app
+conf_dir=/etc/$YNH_APP_ID
 
 #=================================================
-# BACKUP MTG
+# BACKUP
 #=================================================
-ynh_script_progression --message="Backing up mtg data..." --weight=1
+ynh_print_info "Declaring files to be backed up..."
 
 ynh_backup "$install_dir"
 ynh_backup "$conf_dir"

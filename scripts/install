@@ -5,23 +5,16 @@
 #=================================================
 source /usr/share/yunohost/helpers
 
-app=$YNH_APP_ID
+# Variables come directly from settings (helpers 2.1 — no YNH_APP_ARG_ prefix)
+# $port, $secret, $dns, $prometheus are injected automatically
 
-# Read arguments
-port=$YNH_APP_ARG_PORT
-secret_or_domain=$YNH_APP_ARG_SECRET
-dns_ip=$YNH_APP_ARG_DNS
-prometheus=$YNH_APP_ARG_PROMETHEUS
-
-# install_dir is automatically set by YunoHost from [resources.install_dir]
-conf_dir=/etc/$app
+conf_dir=/etc/$YNH_APP_ID
 
 #=================================================
-# FETCH AND INSTALL MTG
+# FETCH AND INSTALL MTG BINARY
 #=================================================
-ynh_script_progression --message="Downloading mtg binary..." --weight=3
+ynh_script_progression "Downloading mtg binary..."
 
-# Map YunoHost architecture to mtg release architecture
 case "$YNH_ARCH" in
     amd64)  MTG_ARCH="linux-amd64" ;;
     armhf)  MTG_ARCH="linux-arm-7" ;;
@@ -30,53 +23,45 @@ case "$YNH_ARCH" in
     *)      ynh_die "Unsupported architecture: $YNH_ARCH" ;;
 esac
 
-# Fetch the latest release URL
-LATEST_RELEASE_URL=$(curl -s "https://api.github.com/repos/9seconds/mtg/releases/latest" | jq -r ".assets[] | select(.name | contains(\"${MTG_ARCH}.tar.gz\")) | .browser_download_url")
+LATEST_RELEASE_URL=$(curl -s "https://api.github.com/repos/9seconds/mtg/releases/latest" \
+    | jq -r ".assets[] | select(.name | contains(\"${MTG_ARCH}.tar.gz\")) | .browser_download_url")
 
 if [ -z "$LATEST_RELEASE_URL" ] || [ "$LATEST_RELEASE_URL" == "null" ]; then
-    ynh_die "Failed to find the latest mtg release for architecture $MTG_ARCH."
+    ynh_die "Failed to find mtg release for architecture $MTG_ARCH."
 fi
 
-# Download and extract the archive into install_dir (auto-created by resources)
-cd "$install_dir" || ynh_die "Failed to enter $install_dir"
-curl -sL "$LATEST_RELEASE_URL" | tar -xz --strip-components=1
+# $install_dir is set automatically from [resources.install_dir]
+curl -sL "$LATEST_RELEASE_URL" | tar -xz --strip-components=1 -C "$install_dir"
 chmod +x "$install_dir/mtg"
 
 #=================================================
-# CONFIGURE MTG
+# GENERATE/VALIDATE SECRET
 #=================================================
-ynh_script_progression --message="Configuring mtg..." --weight=2
+ynh_script_progression "Configuring mtg..."
 
-# If secret doesn't start with 'ee', treat it as a domain and auto-generate
-if [[ "$secret_or_domain" == ee* ]]; then
-    SECRET="$secret_or_domain"
+if [[ "$secret" == ee* ]]; then
+    MTG_SECRET="$secret"
 else
-    ynh_print_info "Generating MTProto secret for fronting domain: $secret_or_domain"
-    SECRET=$("$install_dir/mtg" generate-secret "$secret_or_domain")
-    if [ -z "$SECRET" ]; then
-        ynh_die "Failed to generate mtg secret for domain $secret_or_domain"
-    fi
-    ynh_print_info "Generated secret: $SECRET"
+    ynh_print_info "Generating MTProto secret for fronting domain: $secret"
+    MTG_SECRET=$("$install_dir/mtg" generate-secret "$secret")
+    [ -z "$MTG_SECRET" ] && ynh_die "Failed to generate mtg secret for domain $secret"
+    ynh_print_info "Generated secret: $MTG_SECRET"
 fi
 
-# Save the effective port from resources (may differ from requested if taken)
-port=$(ynh_app_setting_get --app="$app" --key=port)
-
+#=================================================
+# WRITE CONFIGURATION
+#=================================================
 mkdir -p "$conf_dir"
 
-if [ "$prometheus" -eq 1 ]; then
-    PROM_ENABLED="true"
-else
-    PROM_ENABLED="false"
-fi
+[ "$prometheus" = "1" ] && PROM_ENABLED="true" || PROM_ENABLED="false"
 
 cat <<EOF > "$conf_dir/mtg.toml"
 debug = false
-secret = "${SECRET}"
+secret = "${MTG_SECRET}"
 bind-to = "0.0.0.0:${port}"
 
 [network]
-dns = "https://${dns_ip}"
+dns = "https://${dns}"
 
 [stats.prometheus]
 enabled = ${PROM_ENABLED}
@@ -89,15 +74,20 @@ chmod 600 "$conf_dir/mtg.toml"
 chown -R "$app:" "$install_dir" "$conf_dir"
 
 #=================================================
-# SYSTEMD
+# SYSTEMD + SERVICE REGISTRATION
 #=================================================
-ynh_script_progression --message="Setting up systemd service..." --weight=2
+ynh_script_progression "Setting up systemd service..."
 
-ynh_add_systemd_config
-ynh_systemd_action --action=enable --service_name="$app"
-ynh_systemd_action --action=start --service_name="$app"
+ynh_config_add_systemd
+
+yunohost service add "$app" \
+    --description "MTProto proxy for Telegram" \
+    --needs_exposed_ports "$port"
+
+ynh_systemctl --action=enable
+ynh_systemctl --action=start
 
 #=================================================
 # DONE
 #=================================================
-ynh_script_progression --message="Installation complete!" --weight=1
+ynh_script_progression "Installation complete!"

@@ -5,47 +5,52 @@
 #=================================================
 source /usr/share/yunohost/helpers
 
-app=$YNH_APP_ID
-
-# Define local variables
-install_dir=/opt/$app
+conf_dir=/etc/$YNH_APP_ID
 
 #=================================================
 # STOP SERVICE
 #=================================================
-ynh_script_progression --message="Stopping mtg..." --weight=1
-ynh_systemd_action --action=stop --service_name="$app"
+ynh_script_progression "Stopping mtg..."
+ynh_systemctl --action=stop
 
 #=================================================
-# FETCH AND INSTALL MTG
+# FETCH AND INSTALL LATEST MTG BINARY
 #=================================================
-ynh_script_progression --message="Downloading new mtg binary..." --weight=3
+ynh_script_progression "Downloading latest mtg binary..."
 
 case "$YNH_ARCH" in
-    amd64) MTG_ARCH="linux-amd64" ;;
-    armhf) MTG_ARCH="linux-arm-7" ;;
-    arm64) MTG_ARCH="linux-arm64" ;;
-    i386) MTG_ARCH="linux-386" ;;
-    *) ynh_die "Unsupported architecture: $YNH_ARCH" ;;
+    amd64)  MTG_ARCH="linux-amd64" ;;
+    armhf)  MTG_ARCH="linux-arm-7" ;;
+    arm64)  MTG_ARCH="linux-arm64" ;;
+    i386)   MTG_ARCH="linux-386" ;;
+    *)      ynh_die "Unsupported architecture: $YNH_ARCH" ;;
 esac
 
-LATEST_RELEASE_URL=$(curl -s "https://api.github.com/repos/9seconds/mtg/releases/latest" | jq -r ".assets[] | select(.name | contains(\"${MTG_ARCH}.tar.gz\")) | .browser_download_url")
+LATEST_RELEASE_URL=$(curl -s "https://api.github.com/repos/9seconds/mtg/releases/latest" \
+    | jq -r ".assets[] | select(.name | contains(\"${MTG_ARCH}.tar.gz\")) | .browser_download_url")
 
 if [ -z "$LATEST_RELEASE_URL" ] || [ "$LATEST_RELEASE_URL" == "null" ]; then
-    ynh_die "Failed to find the latest mtg release for architecture $MTG_ARCH."
+    ynh_die "Failed to find mtg release for architecture $MTG_ARCH."
 fi
 
-cd "$install_dir" || ynh_die "Failed to enter $install_dir"
-rm -f mtg
-
-curl -sL "$LATEST_RELEASE_URL" | tar -xz --strip-components=1
+rm -f "$install_dir/mtg"
+curl -sL "$LATEST_RELEASE_URL" | tar -xz --strip-components=1 -C "$install_dir"
 chmod +x "$install_dir/mtg"
 chown "$app:" "$install_dir/mtg"
 
 #=================================================
+# UPDATE SYSTEMD CONFIG
+#=================================================
+ynh_config_add_systemd
+
+yunohost service add "$app" \
+    --description "MTProto proxy for Telegram" \
+    --needs_exposed_ports "$port"
+
+#=================================================
 # START SERVICE
 #=================================================
-ynh_script_progression --message="Starting mtg..." --weight=1
-ynh_systemd_action --action=start --service_name="$app"
+ynh_script_progression "Starting mtg..."
+ynh_systemctl --action=start
 
-ynh_script_progression --message="Upgrade complete!" --weight=1
+ynh_script_progression "Upgrade complete!"

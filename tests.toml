@@ -1,0 +1,6 @@
+# Tests for mtg_ynh
+
+test_url = "/"
+
+[[test_matrix]]
+args = "port=3128&secret=google.com&dns=1.1.1.1&prometheus=false"

@@ -1,6 +1,6 @@
-# MTG - MTProto proxy for Telegram
+# [MTG](https://github.com/9seconds/mtg) - MTProto proxy for Telegram
 
-MTG is a highly-opinionated, standalone MTProto proxy for Telegram. It provides a fast, lightweight proxy that helps bypass network restrictions by using domain fronting.
+[MTG](https://github.com/9seconds/mtg) is a highly-opinionated, standalone MTProto proxy for Telegram. It provides a fast, lightweight proxy that helps bypass network restrictions by using domain fronting.
 
 ## Features
 

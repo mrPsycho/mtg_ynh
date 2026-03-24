@@ -1,0 +1,45 @@
+#!/bin/bash
+
+#=================================================
+# COMMON VARIABLES AND HELPERS
+#=================================================
+source /usr/share/yunohost/helpers
+
+app=$YNH_APP_ID
+
+# Define local variables
+install_dir=/opt/$app
+conf_dir=/etc/$app
+
+# Retrieve the port from configuration
+port=$(ynh_app_setting_get --app="$app" --key=port)
+
+#=================================================
+# SYSTEMD AND FIREWALL
+#=================================================
+ynh_script_progression --message="Stopping and removing systemd service..." --weight=1
+
+if systemctl is-active --quiet "$app"; then
+    ynh_systemd_action --action=stop --service_name="$app"
+fi
+ynh_systemd_action --action=disable --service_name="$app" || true
+
+ynh_remove_systemd_config
+
+# Close the port in the firewall
+ynh_exec_warn_less yunohost firewall disallow TCP -p "$port" || true
+
+#=================================================
+# REMOVE FILES AND USER
+#=================================================
+ynh_script_progression --message="Removing files..." --weight=1
+
+ynh_secure_remove "$install_dir"
+ynh_secure_remove "$conf_dir"
+
+ynh_system_user_delete --username="$app"
+
+#=================================================
+# DONE
+#=================================================
+ynh_script_progression --message="Removal complete!" --weight=1

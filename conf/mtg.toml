@@ -1,0 +1,7 @@
+secret = "__SECRET__"
+bind-to = "0.0.0.0:__PORT__"
+
+[defense.doppelganger]
+urls = [
+    "https://__DOMAIN__/",
+]

@@ -1,0 +1,15 @@
+[Unit]
+Description=mtg MTPROTO proxy
+After=network.target
+
+[Service]
+Type=simple
+User=__APP__
+Group=__APP__
+WorkingDirectory=/opt/__APP__
+ExecStart=/opt/__APP__/mtg run /etc/__APP__/mtg.toml
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

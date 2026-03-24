@@ -1,0 +1,37 @@
+#!/bin/bash
+
+#=================================================
+# COMMON VARIABLES AND HELPERS
+#=================================================
+source /usr/share/yunohost/helpers
+
+app=$YNH_APP_ID
+
+# Define local variables
+install_dir=/opt/$app
+conf_dir=/etc/$app
+
+# Retrieve the port from configuration
+port=$(ynh_app_setting_get --app="$app" --key=port)
+
+#=================================================
+# RESTORE MTG
+#=================================================
+ynh_script_progression --message="Restoring mtg data..." --weight=1
+
+ynh_restore_file "$install_dir"
+ynh_restore_file "$conf_dir"
+
+#=================================================
+# SYSTEMD AND FIREWALL
+#=================================================
+ynh_script_progression --message="Recreating systemd and firewall..." --weight=1
+
+ynh_add_systemd_config
+
+ynh_exec_warn_less yunohost firewall allow TCP -p "$port"
+
+ynh_systemd_action --action=enable --service_name="$app"
+ynh_systemd_action --action=start --service_name="$app"
+
+ynh_script_progression --message="Restore complete!" --weight=1

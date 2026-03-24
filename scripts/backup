@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#=================================================
+# COMMON VARIABLES AND HELPERS
+#=================================================
+source /usr/share/yunohost/helpers
+
+app=$YNH_APP_ID
+
+# Define local variables
+install_dir=/opt/$app
+conf_dir=/etc/$app
+
+#=================================================
+# BACKUP MTG
+#=================================================
+ynh_script_progression --message="Backing up mtg data..." --weight=1
+
+ynh_backup "$install_dir"
+ynh_backup "$conf_dir"

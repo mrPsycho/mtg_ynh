@@ -1,0 +1,27 @@
+packaging_format = 2
+id = "mtg"
+name = "mtg"
+description.en = "Highly-opinionated MTPROTO proxy for Telegram"
+version = "2.2.4~ynh1"
+maintainers = ["YourName"]
+
+[install]
+    [install.port]
+    type = "port"
+    ask.en = "Choose a port for the proxy to bind to"
+    default = "3128"
+
+    [install.secret]
+    type = "string"
+    ask.en = "Enter the MTProto Secret (Starts with 'ee...' or provide a fronting domain like google.com to auto-generate)"
+    default = "google.com"
+
+    [install.dns]
+    type = "string"
+    ask.en = "Enter the DNS resolver IP"
+    default = "1.1.1.1"
+
+    [install.prometheus]
+    type = "boolean"
+    ask.en = "Enable Prometheus metrics?"
+    default = false

@@ -13,16 +13,8 @@ secret_or_domain=$YNH_APP_ARG_SECRET
 dns_ip=$YNH_APP_ARG_DNS
 prometheus=$YNH_APP_ARG_PROMETHEUS
 
-# Define local variables
-install_dir=/opt/$app
-data_dir=/var/opt/$app
+# install_dir is automatically set by YunoHost from [resources.install_dir]
 conf_dir=/etc/$app
-
-#=================================================
-# INSTALL DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Installing dependencies..." --weight=1
-ynh_install_app_dependencies curl jq tar ca-certificates
 
 #=================================================
 # FETCH AND INSTALL MTG
@@ -31,21 +23,11 @@ ynh_script_progression --message="Downloading mtg binary..." --weight=3
 
 # Map YunoHost architecture to mtg release architecture
 case "$YNH_ARCH" in
-    amd64)
-        MTG_ARCH="linux-amd64"
-        ;;
-    armhf)
-        MTG_ARCH="linux-arm-7"
-        ;;
-    arm64)
-        MTG_ARCH="linux-arm64"
-        ;;
-    i386)
-        MTG_ARCH="linux-386"
-        ;;
-    *)
-        ynh_die "Unsupported architecture: $YNH_ARCH"
-        ;;
+    amd64)  MTG_ARCH="linux-amd64" ;;
+    armhf)  MTG_ARCH="linux-arm-7" ;;
+    arm64)  MTG_ARCH="linux-arm64" ;;
+    i386)   MTG_ARCH="linux-386" ;;
+    *)      ynh_die "Unsupported architecture: $YNH_ARCH" ;;
 esac
 
 # Fetch the latest release URL
@@ -55,11 +37,8 @@ if [ -z "$LATEST_RELEASE_URL" ] || [ "$LATEST_RELEASE_URL" == "null" ]; then
     ynh_die "Failed to find the latest mtg release for architecture $MTG_ARCH."
 fi
 
-# Create installation directory
-mkdir -p "$install_dir"
+# Download and extract the archive into install_dir (auto-created by resources)
 cd "$install_dir" || ynh_die "Failed to enter $install_dir"
-
-# Download and extract the archive
 curl -sL "$LATEST_RELEASE_URL" | tar -xz --strip-components=1
 chmod +x "$install_dir/mtg"
 
@@ -68,30 +47,29 @@ chmod +x "$install_dir/mtg"
 #=================================================
 ynh_script_progression --message="Configuring mtg..." --weight=2
 
-# Process the secret. If it doesn't start with 'ee', we assume it's a domain and generate a secret
+# If secret doesn't start with 'ee', treat it as a domain and auto-generate
 if [[ "$secret_or_domain" == ee* ]]; then
     SECRET="$secret_or_domain"
 else
     ynh_print_info "Generating MTProto secret for fronting domain: $secret_or_domain"
-    # generate-secret output is usually the secret
     SECRET=$("$install_dir/mtg" generate-secret "$secret_or_domain")
     if [ -z "$SECRET" ]; then
-         ynh_die "Failed to generate mtg secret for domain $secret_or_domain"
+        ynh_die "Failed to generate mtg secret for domain $secret_or_domain"
     fi
     ynh_print_info "Generated secret: $SECRET"
 fi
 
-# Create configuration directory
+# Save the effective port from resources (may differ from requested if taken)
+port=$(ynh_app_setting_get --app="$app" --key=port)
+
 mkdir -p "$conf_dir"
 
-# Convert prometheus argument (boolean) to exact strings for TOML
 if [ "$prometheus" -eq 1 ]; then
     PROM_ENABLED="true"
 else
     PROM_ENABLED="false"
 fi
 
-# Generate configuration file
 cat <<EOF > "$conf_dir/mtg.toml"
 debug = false
 secret = "${SECRET}"
@@ -108,27 +86,14 @@ metric-prefix = "mtg"
 EOF
 
 chmod 600 "$conf_dir/mtg.toml"
-
-#=================================================
-# SYSTEM USER
-#=================================================
-ynh_script_progression --message="Creating system user..." --weight=1
-
-ynh_system_user_create --username="$app" --home_dir="$install_dir"
-
 chown -R "$app:" "$install_dir" "$conf_dir"
 
 #=================================================
-# SYSTEMD AND FIREWALL
+# SYSTEMD
 #=================================================
-ynh_script_progression --message="Configuring systemd and firewall..." --weight=2
+ynh_script_progression --message="Setting up systemd service..." --weight=2
 
 ynh_add_systemd_config
-
-# Open the port in the firewall
-ynh_exec_warn_less yunohost firewall allow TCP "$port"
-
-# Enable and start the service
 ynh_systemd_action --action=enable --service_name="$app"
 ynh_systemd_action --action=start --service_name="$app"
 

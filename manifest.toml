@@ -41,3 +41,18 @@ disk = "50M"
     type = "boolean"
     ask.en = "Enable Prometheus metrics?"
     default = false
+
+[resources]
+    [resources.system_user]
+
+    [resources.install_dir]
+    dir = "/opt/__APP__"
+    owner = "__APP__:rwx"
+    group = "__APP__:rx"
+
+    [resources.ports]
+    main.default = 3128
+    main.exposed = "TCP"
+
+    [resources.apt]
+    packages = "curl, jq, tar, ca-certificates"

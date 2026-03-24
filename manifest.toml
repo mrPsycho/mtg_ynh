@@ -7,7 +7,7 @@ maintainers = ["YourName"]
 
 [install]
     [install.port]
-    type = "port"
+    type = "string"
     ask.en = "Choose a port for the proxy to bind to"
     default = "3128"
 

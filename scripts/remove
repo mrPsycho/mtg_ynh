@@ -27,7 +27,7 @@ ynh_systemd_action --action=disable --service_name="$app" || true
 ynh_remove_systemd_config
 
 # Close the port in the firewall
-ynh_exec_warn_less yunohost firewall disallow TCP -p "$port" || true
+ynh_exec_warn_less yunohost firewall disallow TCP "$port" || true
 
 #=================================================
 # REMOVE FILES AND USER

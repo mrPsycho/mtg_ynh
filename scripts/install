@@ -126,7 +126,7 @@ ynh_script_progression --message="Configuring systemd and firewall..." --weight=
 ynh_add_systemd_config
 
 # Open the port in the firewall
-ynh_exec_warn_less yunohost firewall allow TCP -p "$port"
+ynh_exec_warn_less yunohost firewall allow TCP "$port"
 
 # Enable and start the service
 ynh_systemd_action --action=enable --service_name="$app"

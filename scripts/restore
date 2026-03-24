@@ -29,7 +29,7 @@ ynh_script_progression --message="Recreating systemd and firewall..." --weight=1
 
 ynh_add_systemd_config
 
-ynh_exec_warn_less yunohost firewall allow TCP -p "$port"
+ynh_exec_warn_less yunohost firewall allow TCP "$port"
 
 ynh_systemd_action --action=enable --service_name="$app"
 ynh_systemd_action --action=start --service_name="$app"

@@ -56,7 +56,7 @@ ynh_config_add_systemd
 
 yunohost service add "$app" \
     --description "MTProto proxy for Telegram" \
-    --needs_exposed_ports main
+    --needs_exposed_ports "$port"
 
 ynh_systemctl --action=enable
 ynh_systemctl --action=start

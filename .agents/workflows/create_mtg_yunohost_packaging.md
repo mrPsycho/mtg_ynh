@@ -9,6 +9,8 @@ Follow these instructions to create or maintain the YunoHost application package
 ## Context and References
 When iterating on or rebuilding this YunoHost application, use the following resources as your ground truth reference:
 - YunoHost Packaging Documentation: https://doc.yunohost.org/en/dev/packaging/
+- YunoHost packaging details about using config files and external sources for binaries, packages and other external resources.
+https://doc.yunohost.org/en/dev/packaging/scripts/helpers_v2.1
 - YunoHost Example App structure: https://github.com/YunoHost/example_ynh
 - MTG Main Repository: https://github.com/9seconds/mtg
 - MTG Supported Config Options: https://github.com/9seconds/mtg/blob/master/example.config.toml

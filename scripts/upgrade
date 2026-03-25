@@ -18,25 +18,24 @@ ynh_systemctl --action=stop
 #=================================================
 ynh_script_progression "Downloading latest mtg binary..."
 
-case "$YNH_ARCH" in
-    amd64)  MTG_ARCH="linux-amd64" ;;
-    armhf)  MTG_ARCH="linux-arm-7" ;;
-    arm64)  MTG_ARCH="linux-arm64" ;;
-    i386)   MTG_ARCH="linux-386" ;;
-    *)      ynh_die "Unsupported architecture: $YNH_ARCH" ;;
-esac
-
-LATEST_RELEASE_URL=$(curl -s "https://api.github.com/repos/9seconds/mtg/releases/latest" \
-    | jq -r ".assets[] | select(.name | contains(\"${MTG_ARCH}.tar.gz\")) | .browser_download_url")
-
-if [ -z "$LATEST_RELEASE_URL" ] || [ "$LATEST_RELEASE_URL" == "null" ]; then
-    ynh_die "Failed to find mtg release for architecture $MTG_ARCH."
-fi
-
-rm -f "$install_dir/mtg"
-curl -sL "$LATEST_RELEASE_URL" | tar -xz --strip-components=1 -C "$install_dir"
+# $install_dir is set automatically from [resources.install_dir]
+ynh_setup_source --dest_dir="$install_dir" --full_replace
 chmod +x "$install_dir/mtg"
 chown "$app:" "$install_dir/mtg"
+
+#=================================================
+# UPDATE CONFIGURATION
+#=================================================
+ynh_script_progression "Updating configuration..."
+
+mtg_secret=$(ynh_app_setting_get --key=mtg_secret)
+if [ -z "$mtg_secret" ] && [ -f "$conf_dir/mtg.toml" ]; then
+    mtg_secret=$(grep "^secret =" "$conf_dir/mtg.toml" | cut -d '"' -f 2)
+    [ -n "$mtg_secret" ] && ynh_app_setting_set --key=mtg_secret --value="$mtg_secret"
+fi
+[ "$prometheus" = "1" ] && prom_enabled="true" || prom_enabled="false"
+
+ynh_config_add --template="mtg.toml" --destination="$conf_dir/mtg.toml"
 
 #=================================================
 # UPDATE SYSTEMD CONFIG

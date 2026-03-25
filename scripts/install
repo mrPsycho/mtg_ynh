@@ -15,23 +15,8 @@ conf_dir=/etc/$YNH_APP_ID
 #=================================================
 ynh_script_progression "Downloading mtg binary..."
 
-case "$YNH_ARCH" in
-    amd64)  MTG_ARCH="linux-amd64" ;;
-    armhf)  MTG_ARCH="linux-arm-7" ;;
-    arm64)  MTG_ARCH="linux-arm64" ;;
-    i386)   MTG_ARCH="linux-386" ;;
-    *)      ynh_die "Unsupported architecture: $YNH_ARCH" ;;
-esac
-
-LATEST_RELEASE_URL=$(curl -s "https://api.github.com/repos/9seconds/mtg/releases/latest" \
-    | jq -r ".assets[] | select(.name | contains(\"${MTG_ARCH}.tar.gz\")) | .browser_download_url")
-
-if [ -z "$LATEST_RELEASE_URL" ] || [ "$LATEST_RELEASE_URL" == "null" ]; then
-    ynh_die "Failed to find mtg release for architecture $MTG_ARCH."
-fi
-
 # $install_dir is set automatically from [resources.install_dir]
-curl -sL "$LATEST_RELEASE_URL" | tar -xz --strip-components=1 -C "$install_dir"
+ynh_setup_source --dest_dir="$install_dir"
 chmod +x "$install_dir/mtg"
 
 #=================================================
@@ -40,35 +25,24 @@ chmod +x "$install_dir/mtg"
 ynh_script_progression "Configuring mtg..."
 
 if [[ "$secret" == ee* ]]; then
-    MTG_SECRET="$secret"
+    mtg_secret="$secret"
 else
     ynh_print_info "Generating MTProto secret for fronting domain: $secret"
-    MTG_SECRET=$("$install_dir/mtg" generate-secret "$secret")
-    [ -z "$MTG_SECRET" ] && ynh_die "Failed to generate mtg secret for domain $secret"
-    ynh_print_info "Generated secret: $MTG_SECRET"
+    mtg_secret=$("$install_dir/mtg" generate-secret "$secret")
+    [ -z "$mtg_secret" ] && ynh_die "Failed to generate mtg secret for domain $secret"
+    ynh_print_info "Generated secret: $mtg_secret"
 fi
+
+ynh_app_setting_set --key=mtg_secret --value="$mtg_secret"
 
 #=================================================
 # WRITE CONFIGURATION
 #=================================================
 mkdir -p "$conf_dir"
 
-[ "$prometheus" = "1" ] && PROM_ENABLED="true" || PROM_ENABLED="false"
+[ "$prometheus" = "1" ] && prom_enabled="true" || prom_enabled="false"
 
-cat <<EOF > "$conf_dir/mtg.toml"
-debug = false
-secret = "${MTG_SECRET}"
-bind-to = "0.0.0.0:${port}"
-
-[network]
-dns = "https://${dns}"
-
-[stats.prometheus]
-enabled = ${PROM_ENABLED}
-bind-to = "127.0.0.1:3129"
-http-path = "/"
-metric-prefix = "mtg"
-EOF
+ynh_config_add --template="mtg.toml" --destination="$conf_dir/mtg.toml"
 
 chmod 600 "$conf_dir/mtg.toml"
 chown -R "$app:" "$install_dir" "$conf_dir"

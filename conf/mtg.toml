@@ -1,7 +1,12 @@
-secret = "__SECRET__"
+debug = false
+secret = "__MTG_SECRET__"
 bind-to = "0.0.0.0:__PORT__"
 
-[defense.doppelganger]
-urls = [
-    "https://__DOMAIN__/",
-]
+[network]
+dns = "https://__DNS__"
+
+[stats.prometheus]
+enabled = __PROM_ENABLED__
+bind-to = "127.0.0.1:3129"
+http-path = "/"
+metric-prefix = "mtg"

@@ -55,5 +55,19 @@ disk = "50M"
     main.default = 3128
     main.exposed = "TCP"
 
+    [resources.sources.main]
+    # x86_64 / amd64
+    amd64.url = "https://github.com/9seconds/mtg/releases/download/v2.2.4/mtg-2.2.4-linux-amd64.tar.gz"
+    amd64.sha256 = "ed30e690c33d15dd8cc709284a20d9a890e20dce1a848bcccc3fd67b91e357af"
+    # i386
+    i386.url = "https://github.com/9seconds/mtg/releases/download/v2.2.4/mtg-2.2.4-linux-386.tar.gz"
+    i386.sha256 = "4a966c722cf794fb8d5ef97f0c9b91ac720ffbe0da6e76a661bb5db31188566b"
+    # arm64 / aarch64
+    arm64.url = "https://github.com/9seconds/mtg/releases/download/v2.2.4/mtg-2.2.4-linux-arm64.tar.gz"
+    arm64.sha256 = "bb4a75017871d542c2da396ce7011f805abc30d5453cffcbc8fb96f5eb707c17"
+    # armhf / armv7
+    armhf.url = "https://github.com/9seconds/mtg/releases/download/v2.2.4/mtg-2.2.4-linux-armv7.tar.gz"
+    armhf.sha256 = "7d4a711c65c2e4bcc2dc15ce2e34ff1417db1cbe5365c561c8e3f55ebcd7f8ce"
+
     [resources.apt]
     packages = "curl, jq, tar, ca-certificates"

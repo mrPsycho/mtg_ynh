@@ -25,7 +25,6 @@ disk = "50M"
 [install]
     [install.port]
     type = "string"
-    bind = "ports.main"
     ask.en = "Choose a port for the proxy to bind to"
     default = "3128"
 
@@ -52,9 +51,6 @@ disk = "50M"
     owner = "__APP__:rwx"
     group = "__APP__:rx"
 
-    [resources.ports]
-    main.default = 3128
-    main.exposed = "TCP"
 
     [resources.sources.main]
     # x86_64 / amd64

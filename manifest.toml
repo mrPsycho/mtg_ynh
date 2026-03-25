@@ -25,6 +25,7 @@ disk = "50M"
 [install]
     [install.port]
     type = "string"
+    bind = "ports.main"
     ask.en = "Choose a port for the proxy to bind to"
     default = "3128"
 

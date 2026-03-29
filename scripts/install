@@ -40,6 +40,10 @@ ynh_app_setting_set --key=mtg_secret --value="$mtg_secret"
 #=================================================
 mkdir -p "$conf_dir"
 
+# Create log directory
+mkdir -p /var/log/$YNH_APP_ID
+chown $app: /var/log/$YNH_APP_ID
+
 [ "$prometheus" = "1" ] && prom_enabled="true" || prom_enabled="false"
 
 ynh_config_add --template="mtg.toml" --destination="$conf_dir/mtg.toml"

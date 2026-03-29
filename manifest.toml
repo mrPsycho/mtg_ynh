@@ -47,7 +47,7 @@ disk = "50M"
     [resources.system_user]
 
     [resources.install_dir]
-    dir = "/opt/__APP__"
+    dir = "/var/www/__APP__"
     owner = "__APP__:rwx"
     group = "__APP__:rx"
 
@@ -65,6 +65,3 @@ disk = "50M"
     # armhf / armv7
     armhf.url = "https://github.com/9seconds/mtg/releases/download/v2.2.4/mtg-2.2.4-linux-armv7.tar.gz"
     armhf.sha256 = "7d4a711c65c2e4bcc2dc15ce2e34ff1417db1cbe5365c561c8e3f55ebcd7f8ce"
-
-    [resources.apt]
-    packages = "curl, jq, tar, ca-certificates"

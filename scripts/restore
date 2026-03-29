@@ -5,15 +5,12 @@
 #=================================================
 source /usr/share/yunohost/helpers
 
-conf_dir=/etc/$YNH_APP_ID
-
 #=================================================
 # RESTORE
 #=================================================
 ynh_script_progression "Restoring configuration files..."
 
 ynh_restore "$install_dir"
-ynh_restore "$conf_dir"
 
 #=================================================
 # SYSTEMD + SERVICE REGISTRATION
@@ -24,7 +21,9 @@ ynh_config_add_systemd
 
 yunohost service add "$app" \
     --description "MTProto proxy for Telegram" \
-    --needs_exposed_ports "$port"
+    --needs_exposed_ports "$port" \
+    --log="/var/log/$app/mtg.log" 
+
 
 ynh_systemctl --action=enable
 ynh_systemctl --action=start

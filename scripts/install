@@ -8,14 +8,13 @@ source /usr/share/yunohost/helpers
 # Variables come directly from settings (helpers 2.1 — no YNH_APP_ARG_ prefix)
 # $port, $secret, $dns, $prometheus are injected automatically
 
-conf_dir=/etc/$YNH_APP_ID
+conf_dir=$install_dir/conf
 
 #=================================================
 # FETCH AND INSTALL MTG BINARY
 #=================================================
 ynh_script_progression "Downloading mtg binary..."
 
-# $install_dir is set automatically from [resources.install_dir]
 ynh_setup_source --dest_dir="$install_dir"
 chmod +x "$install_dir/mtg"
 
@@ -41,15 +40,12 @@ ynh_app_setting_set --key=mtg_secret --value="$mtg_secret"
 mkdir -p "$conf_dir"
 
 # Create log directory
-mkdir -p /var/log/$YNH_APP_ID
-chown $app: /var/log/$YNH_APP_ID
+mkdir -p /var/log/$app
+chown -R "$app:www-data" "/var/log/$app"
 
 [ "$prometheus" = "1" ] && prom_enabled="true" || prom_enabled="false"
 
 ynh_config_add --template="mtg.toml" --destination="$conf_dir/mtg.toml"
-
-chmod 600 "$conf_dir/mtg.toml"
-chown -R "$app:" "$install_dir" "$conf_dir"
 
 #=================================================
 # SYSTEMD + SERVICE REGISTRATION
@@ -60,7 +56,8 @@ ynh_config_add_systemd
 
 yunohost service add "$app" \
     --description "MTProto proxy for Telegram" \
-    --needs_exposed_ports "$port"
+    --needs_exposed_ports "$port" \
+    --log="/var/log/$app/mtg.log" 
 
 ynh_systemctl --action=enable
 ynh_systemctl --action=start

@@ -5,7 +5,7 @@
 #=================================================
 source /usr/share/yunohost/helpers
 
-conf_dir=/etc/$YNH_APP_ID
+conf_dir=$install_dir/conf
 
 #=================================================
 # STOP AND REMOVE SERVICE

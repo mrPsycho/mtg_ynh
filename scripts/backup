@@ -5,12 +5,9 @@
 #=================================================
 source /usr/share/yunohost/helpers
 
-conf_dir=/etc/$YNH_APP_ID
-
 #=================================================
 # BACKUP
 #=================================================
 ynh_print_info "Declaring files to be backed up..."
 
 ynh_backup "$install_dir"
-ynh_backup "$conf_dir"

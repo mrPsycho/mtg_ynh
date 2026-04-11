@@ -5,7 +5,7 @@ id = "mtg"
 name = "mtg"
 description.en = "Highly-opinionated MTPROTO proxy for Telegram"
 
-version = "2.2.4~ynh1"
+version = "2.2.8~ynh1"
 
 maintainers = ["mrpsycho"]
 
@@ -56,14 +56,14 @@ disk = "50M"
 
     [resources.sources.main]
     # x86_64 / amd64
-    amd64.url = "https://github.com/9seconds/mtg/releases/download/v2.2.4/mtg-2.2.4-linux-amd64.tar.gz"
-    amd64.sha256 = "ed30e690c33d15dd8cc709284a20d9a890e20dce1a848bcccc3fd67b91e357af"
+    amd64.url = "https://github.com/9seconds/mtg/releases/download/v2.2.8/mtg-2.2.8-linux-amd64.tar.gz"
+    amd64.sha256 = "7ef19d079d85f4e00d4f8334ec1f3f3c8718e3d0ed1f3109ea9a8673138a2102"
     # i386
-    i386.url = "https://github.com/9seconds/mtg/releases/download/v2.2.4/mtg-2.2.4-linux-386.tar.gz"
-    i386.sha256 = "4a966c722cf794fb8d5ef97f0c9b91ac720ffbe0da6e76a661bb5db31188566b"
+    i386.url = "https://github.com/9seconds/mtg/releases/download/v2.2.8/mtg-2.2.8-linux-386.tar.gz"
+    i386.sha256 = "99c2f177730271b88d8f2404b2cf27d5ee997685f6d9118d4c8cac9c5aaedf50"
     # arm64 / aarch64
-    arm64.url = "https://github.com/9seconds/mtg/releases/download/v2.2.4/mtg-2.2.4-linux-arm64.tar.gz"
-    arm64.sha256 = "bb4a75017871d542c2da396ce7011f805abc30d5453cffcbc8fb96f5eb707c17"
+    arm64.url = "https://github.com/9seconds/mtg/releases/download/v2.2.8/mtg-2.2.8-linux-arm64.tar.gz"
+    arm64.sha256 = "562a94dd4cafcb8f179b76cfeafb76da12747c8e230bc76235bf8746cc189644"
     # armhf / armv7
-    armhf.url = "https://github.com/9seconds/mtg/releases/download/v2.2.4/mtg-2.2.4-linux-armv7.tar.gz"
-    armhf.sha256 = "7d4a711c65c2e4bcc2dc15ce2e34ff1417db1cbe5365c561c8e3f55ebcd7f8ce"
+    armhf.url = "https://github.com/9seconds/mtg/releases/download/v2.2.8/mtg-2.2.8-linux-armv7.tar.gz"
+    armhf.sha256 = "494ee3794ed00201e5333b478236ce2f434b33f2d3445f227debe9fc386bbef0"

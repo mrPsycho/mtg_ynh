@@ -16,9 +16,9 @@ ynh_script_progression "Stopping $app's systemd service..."
 ynh_systemctl --action=stop
 
 #=================================================
-# FETCH AND INSTALL LATEST MTG BINARY
+# DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression "Downloading latest mtg binary..."
+ynh_script_progression "Upgrading source files..."
 
 # $install_dir is set automatically from [resources.install_dir]
 ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="conf"
@@ -27,9 +27,9 @@ chmod +x "$install_dir/mtg"
 chown "$app:" "$install_dir/mtg"
 
 #=================================================
-# UPDATE CONFIGURATION
+# UPDATE A CONFIG FILE
 #=================================================
-ynh_script_progression "Updating configuration..."
+ynh_script_progression "Updating $app's configuration files..."
 
 mtg_secret=$(ynh_app_setting_get --key=mtg_secret)
 if [ -z "$mtg_secret" ] && [ -f "$conf_dir/mtg.toml" ]; then
@@ -47,6 +47,7 @@ chown $app: /var/log/$app
 #=================================================
 # UPDATE SYSTEMD CONFIG
 #=================================================
+
 ynh_config_add_systemd
 
 yunohost service add "$app" \

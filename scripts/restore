@@ -7,16 +7,16 @@
 source /usr/share/yunohost/helpers
 
 #=================================================
-# RESTORE
+# RESTORE THE APP MAIN DIR
 #=================================================
-ynh_script_progression "Restoring configuration files..."
+ynh_script_progression "Restoring the app main directory..."
 
 ynh_restore "$install_dir"
 
 #=================================================
-# SYSTEMD + SERVICE REGISTRATION
+# RESTORE SYSTEM CONFIGURATIONS
 #=================================================
-ynh_script_progression "Restoring systemd service..."
+ynh_script_progression "Restoring system configurations related to $app..."
 
 ynh_config_add_systemd
 

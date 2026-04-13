@@ -18,9 +18,6 @@ if ynh_hide_warnings yunohost service status "$app" >/dev/null; then
     yunohost service remove "$app"
 fi
 
-ynh_systemctl --action=stop --ignore_exceptions
-ynh_systemctl --action=disable --ignore_exceptions
-
 ynh_config_remove_systemd
 
 #=================================================

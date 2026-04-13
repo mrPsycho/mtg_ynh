@@ -3,19 +3,20 @@
 #=================================================
 # COMMON VARIABLES AND HELPERS
 #=================================================
+
 source /usr/share/yunohost/helpers
 
 #=================================================
-# RESTORE
+# RESTORE THE APP MAIN DIR
 #=================================================
-ynh_script_progression "Restoring configuration files..."
+ynh_script_progression "Restoring the app main directory..."
 
 ynh_restore "$install_dir"
 
 #=================================================
-# SYSTEMD + SERVICE REGISTRATION
+# RESTORE SYSTEM CONFIGURATIONS
 #=================================================
-ynh_script_progression "Restoring systemd service..."
+ynh_script_progression "Restoring system configurations related to $app..."
 
 ynh_config_add_systemd
 
@@ -24,8 +25,16 @@ yunohost service add "$app" \
     --needs_exposed_ports "$port" \
     --log="/var/log/$app/mtg.log" 
 
+#=================================================
+# RELOAD NGINX AND PHP-FPM OR THE APP SERVICE
+#=================================================
+ynh_script_progression "Reloading $app's service..."
 
 ynh_systemctl --action=enable
 ynh_systemctl --action=start
 
-ynh_script_progression "Restore complete!"
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression "Restoration completed for $app"

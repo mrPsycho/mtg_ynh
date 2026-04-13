@@ -4,6 +4,7 @@ packaging_format = 2
 id = "mtg"
 name = "mtg"
 description.en = "Highly-opinionated MTPROTO proxy for Telegram"
+description.fr = "Proxy MTProto pour Telegram"
 
 version = "2.2.8~ynh1"
 
@@ -14,9 +15,8 @@ license = "MIT"
 code = "https://github.com/9seconds/mtg"
 admindoc = "https://github.com/9seconds/mtg/blob/master/README.md"
 
-
 [integration]
-yunohost = ">= 12.1.17"
+yunohost = ">= 12.1.38"
 helpers_version = "2.1"
 architectures = "all"
 multi_instance = false
@@ -32,21 +32,25 @@ disk = "50M"
     [install.port]
     type = "string"
     ask.en = "Choose a port for the proxy to bind to"
+    ask.fr = "Choisissez un port auquel le proxy doit se connecter"
     default = "3128"
 
     [install.secret]
     type = "string"
     ask.en = "Enter the MTProto Secret (Starts with 'ee...' or provide a fronting domain like google.com to auto-generate)"
+    ask.fr = "Saisissez le secret MTProto (commençant par « ee... » ou indiquez un domaine de base tel que google.com pour qu'il soit généré automatiquement)""
     default = "google.com"
 
     [install.dns]
     type = "string"
     ask.en = "Enter the DNS resolver IP"
+    ask.fr = "Saisissez l'adresse IP du résolveur DNS"
     default = "1.1.1.1"
 
     [install.prometheus]
     type = "boolean"
     ask.en = "Enable Prometheus metrics?"
+    ask.fr = "Activer les métriques Prometheus ?"
     default = false
 
 [resources]

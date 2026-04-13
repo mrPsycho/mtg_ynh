@@ -3,25 +3,24 @@
 #=================================================
 # COMMON VARIABLES AND HELPERS
 #=================================================
-source /usr/share/yunohost/helpers
 
-# Variables come directly from settings (helpers 2.1 — no YNH_APP_ARG_ prefix)
-# $port, $secret, $dns, $prometheus are injected automatically
+source /usr/share/yunohost/helpers
 
 conf_dir=$install_dir/conf
 
 #=================================================
 # FETCH AND INSTALL MTG BINARY
 #=================================================
-ynh_script_progression "Downloading mtg binary..."
+ynh_script_progression "Setting up source files..."
 
 ynh_setup_source --dest_dir="$install_dir"
+
 chmod +x "$install_dir/mtg"
 
 #=================================================
 # GENERATE/VALIDATE SECRET
 #=================================================
-ynh_script_progression "Configuring mtg..."
+ynh_script_progression "Adding $app's configuration files..."
 
 if [[ "$secret" == ee* ]]; then
     mtg_secret="$secret"
@@ -37,6 +36,7 @@ ynh_app_setting_set --key=mtg_secret --value="$mtg_secret"
 #=================================================
 # WRITE CONFIGURATION
 #=================================================
+
 mkdir -p "$conf_dir"
 
 # Create log directory
@@ -59,10 +59,16 @@ yunohost service add "$app" \
     --needs_exposed_ports "$port" \
     --log="/var/log/$app/mtg.log" 
 
+#=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_script_progression "Starting $app's systemd service..."
+
 ynh_systemctl --action=enable
 ynh_systemctl --action=start
 
 #=================================================
-# DONE
+# END OF SCRIPT
 #=================================================
-ynh_script_progression "Installation complete!"
+
+ynh_script_progression "Installation of $app completed"

@@ -3,6 +3,7 @@
 #=================================================
 # COMMON VARIABLES AND HELPERS
 #=================================================
+
 source /usr/share/yunohost/helpers
 
 conf_dir=$install_dir/conf
@@ -10,7 +11,7 @@ conf_dir=$install_dir/conf
 #=================================================
 # STOP SERVICE
 #=================================================
-ynh_script_progression "Stopping mtg..."
+ynh_script_progression "Stopping $app's systemd service..."
 
 ynh_systemctl --action=stop
 
@@ -20,7 +21,8 @@ ynh_systemctl --action=stop
 ynh_script_progression "Downloading latest mtg binary..."
 
 # $install_dir is set automatically from [resources.install_dir]
-ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="conf"  
+ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="conf"
+  
 chmod +x "$install_dir/mtg"
 chown "$app:" "$install_dir/mtg"
 

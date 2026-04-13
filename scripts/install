@@ -6,9 +6,6 @@
 
 source /usr/share/yunohost/helpers
 
-# Variables come directly from settings (helpers 2.1 — no YNH_APP_ARG_ prefix)
-# $port, $secret, $dns, $prometheus are injected automatically
-
 conf_dir=$install_dir/conf
 
 #=================================================

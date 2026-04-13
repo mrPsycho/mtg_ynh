@@ -24,8 +24,16 @@ yunohost service add "$app" \
     --needs_exposed_ports "$port" \
     --log="/var/log/$app/mtg.log" 
 
+#=================================================
+# RELOAD NGINX AND PHP-FPM OR THE APP SERVICE
+#=================================================
+ynh_script_progression "Reloading $app's service..."
 
 ynh_systemctl --action=enable
 ynh_systemctl --action=start
 
-ynh_script_progression "Restore complete!"
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression "Restoration completed for $app"

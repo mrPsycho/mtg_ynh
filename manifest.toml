@@ -14,9 +14,8 @@ license = "MIT"
 code = "https://github.com/9seconds/mtg"
 admindoc = "https://github.com/9seconds/mtg/blob/master/README.md"
 
-
 [integration]
-yunohost = ">= 12.1.17"
+yunohost = ">= 12.1.38"
 helpers_version = "2.1"
 architectures = "all"
 multi_instance = false

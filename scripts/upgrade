@@ -3,6 +3,7 @@
 #=================================================
 # COMMON VARIABLES AND HELPERS
 #=================================================
+
 source /usr/share/yunohost/helpers
 
 conf_dir=$install_dir/conf
@@ -10,23 +11,25 @@ conf_dir=$install_dir/conf
 #=================================================
 # STOP SERVICE
 #=================================================
-ynh_script_progression "Stopping mtg..."
+ynh_script_progression "Stopping $app's systemd service..."
+
 ynh_systemctl --action=stop
 
 #=================================================
-# FETCH AND INSTALL LATEST MTG BINARY
+# DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression "Downloading latest mtg binary..."
+ynh_script_progression "Upgrading source files..."
 
 # $install_dir is set automatically from [resources.install_dir]
-ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="conf"  
+ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="conf"
+  
 chmod +x "$install_dir/mtg"
 chown "$app:" "$install_dir/mtg"
 
 #=================================================
-# UPDATE CONFIGURATION
+# UPDATE A CONFIG FILE
 #=================================================
-ynh_script_progression "Updating configuration..."
+ynh_script_progression "Updating $app's configuration files..."
 
 mtg_secret=$(ynh_app_setting_get --key=mtg_secret)
 if [ -z "$mtg_secret" ] && [ -f "$conf_dir/mtg.toml" ]; then
@@ -44,18 +47,23 @@ chown $app: /var/log/$app
 #=================================================
 # UPDATE SYSTEMD CONFIG
 #=================================================
+
 ynh_config_add_systemd
 
 yunohost service add "$app" \
     --description "MTProto proxy for Telegram" \
     --needs_exposed_ports "$port" \
-    --log="/var/log/$app/mtg.log" 
-
+    --log="/var/log/$app/mtg.log"
 
 #=================================================
-# START SERVICE
+# START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression "Starting mtg..."
+ynh_script_progression "Starting $app's systemd service..."
+
 ynh_systemctl --action=start
 
-ynh_script_progression "Upgrade complete!"
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression "Upgrade of $app completed"

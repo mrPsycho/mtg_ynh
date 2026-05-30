@@ -3,6 +3,7 @@
 #=================================================
 # COMMON VARIABLES AND HELPERS
 #=================================================
+
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -11,3 +12,10 @@ source /usr/share/yunohost/helpers
 ynh_print_info "Declaring files to be backed up..."
 
 ynh_backup "$install_dir"
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info "Backup script completed for $app. (YunoHost will then actually copy those files to the archive)."
+

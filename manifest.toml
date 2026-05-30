@@ -38,7 +38,7 @@ disk = "50M"
     [install.secret]
     type = "string"
     ask.en = "Enter the MTProto Secret (Starts with 'ee...' or provide a fronting domain like google.com to auto-generate)"
-    ask.fr = "Saisissez le secret MTProto (commençant par « ee... » ou indiquez un domaine de base tel que google.com pour qu'il soit généré automatiquement)""
+    ask.fr = "Saisissez le secret MTProto (commençant par « ee... » ou indiquez un domaine de base tel que google.com pour qu'il soit généré automatiquement)"
     default = "google.com"
 
     [install.dns]
